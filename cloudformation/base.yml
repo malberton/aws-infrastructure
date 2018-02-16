@@ -1,0 +1,87 @@
+# Example of Infrastructure as code
+# Mark Alberton
+#
+# MAPPINGS
+Mappings:
+  SubnetMap:
+    us-east-1:
+      Az1: "us-east-1a"
+      Az2: "us-east-1b"
+    us-west-2:
+      Az1: "us-west-2a"
+      Az2: "us-west-2b"
+
+
+# RESOURCES
+Resources:
+
+# ######################################## VPC
+
+  VpcBase:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: 172.16.0.0/16
+      EnableDnsSupport: True
+      EnableDnsHostnames: False
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: VPC Test
+
+# ######################################## SUBNETS
+
+  SubnetPublicAz1:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az1]
+      CidrBlock: 172.16.1.0/24
+      MapPublicIpOnLaunch: False
+      Tags:
+        - Key: Name
+          Value: Public AZ1
+      VpcId: !Ref VpcBase
+
+  SubnetPrivateAz1:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az1]
+      CidrBlock: 172.16.2.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Private AZ1
+      VpcId: !Ref VpcBase
+
+  SubnetPublicAz2:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az2]
+      CidrBlock: 172.16.3.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Public AZ2
+      VpcId: !Ref VpcBase
+
+  SubnetPrivateAz2:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az2]
+      CidrBlock: 172.16.4.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: Private AZ2
+      VpcId: !Ref VpcBase
+
+# ######################################## INTERNET GATEWAY
+
+
+# DONE - subnets
+# security groups
+# acl
+# vpn attachments
+# internet gateways
+# route tables
+# network interfaces
+# vpc peering

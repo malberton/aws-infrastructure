@@ -76,12 +76,48 @@ Resources:
 
 # ######################################## INTERNET GATEWAY
 
+  Igw:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+      - Key: Name
+        Value: VPC Test IGW
 
-# DONE - subnets
+  IgwAttach:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VpcBase
+      InternetGatewayId: !Ref Igw
+
+# ######################################## ROUTE TABLES
+
+  RouteTablePublic:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VpcBase
+      Tags:
+      - Key: Name
+        Value: VPC Test public RT
+
+  RouteTablePrivate:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VpcBase
+      Tags:
+      - Key: Name
+        Value: VPC Test private RT
+
+# ######################################## ROUTES
+
+  RouteTablePublicAddIgw:
+    Type: "AWS::EC2::Route"
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref Igw
+      RouteTableId: !Ref RouteTablePublic
+
 # security groups
 # acl
 # vpn attachments
-# internet gateways
-# route tables
 # network interfaces
 # vpc peering

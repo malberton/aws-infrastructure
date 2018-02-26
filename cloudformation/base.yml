@@ -116,6 +116,32 @@ Resources:
       GatewayId: !Ref Igw
       RouteTableId: !Ref RouteTablePublic
 
+# ######################################## SUBNET ASSOCIATIONS
+
+  RouteTablePublicAssociateSubnetAz1:
+  Type: "AWS::EC2::SubnetRouteTableAssociation"
+  Properties:
+    RouteTableId: !Ref RouteTablePublic
+    SubnetId: !Ref SubnetPublicAz1
+
+  RouteTablePublicAssociateSubnetAz2:
+  Type: "AWS::EC2::SubnetRouteTableAssociation"
+  Properties:
+    RouteTableId: !Ref RouteTablePublic
+    SubnetId: !Ref SubnetPublicAz2
+
+  RouteTablePrivateAssociateSubnetAz1:
+  Type: "AWS::EC2::SubnetRouteTableAssociation"
+  Properties:
+    RouteTableId: !Ref RouteTablePrivate
+    SubnetId: !Ref SubnetPrivateAz1
+
+  RouteTablePrivateAssociateSubnetAz2:
+  Type: "AWS::EC2::SubnetRouteTableAssociation"
+  Properties:
+    RouteTableId: !Ref RouteTablePrivate
+    SubnetId: !Ref SubnetPrivateAz2
+
 # security groups
 # acl
 # vpn attachments

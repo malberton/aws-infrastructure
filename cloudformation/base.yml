@@ -44,7 +44,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-        Value: VPC Test IGW
+          Value: VPC Test IGW
 
   VpcIgwAttach:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -143,7 +143,7 @@ Resources:
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref VpcIgw
-      RouteTableId: !Ref RouteTablePublic
+      RouteTableId: !Ref PublicRouteTable
 
   PrivateRouteToNat:
     Type: AWS::EC2::Route

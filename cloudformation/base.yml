@@ -27,7 +27,7 @@ Resources:
 # ######################################## VPC
 
   VpcBase:
-    Type: "AWS::EC2::VPC"
+    Type: AWS::EC2::VPC
     Properties:
       CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", VpcCidr ]
       EnableDnsSupport: True
@@ -40,7 +40,7 @@ Resources:
 # ######################################## INTERNET GATEWAY
 
   VpcIgw:
-    Type: "AWS::EC2::InternetGateway"
+    Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
@@ -55,7 +55,7 @@ Resources:
 # ######################################## SUBNETS
 
   Az0PublicSubnet:
-    Type: "AWS::EC2::Subnet"
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcBase
       CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az0PublicSubnet ]
@@ -66,7 +66,7 @@ Resources:
           Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Public Subnet" ] ]
 
   Az0PrivateSubnet:
-    Type: "AWS::EC2::Subnet"
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcBase
       CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az0PrivateSubnet ]
@@ -77,7 +77,7 @@ Resources:
           Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Private Subnet" ] ]
 
   Az1PublicSubnet:
-    Type: "AWS::EC2::Subnet"
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcBase
       CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az1PublicSubnet ]
@@ -88,7 +88,7 @@ Resources:
           Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Public Subnet" ] ]
 
   Az1PrivateSubnet:
-    Type: "AWS::EC2::Subnet"
+    Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcBase
       CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az1PrivateSubnet ]
@@ -104,7 +104,7 @@ Resources:
 # ######################################## ROUTE TABLES
 
   PublicRouteTable:
-    Type: "AWS::EC2::RouteTable"
+    Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VpcBase
       Tags:
@@ -112,7 +112,7 @@ Resources:
         Value: VPC Test Public Subnet Route Table
 
   PrivateRouteTable:
-    Type: "AWS::EC2::RouteTable"
+    Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VpcBase
       Tags:
@@ -122,35 +122,43 @@ Resources:
 # ######################################## ROUTES
 
   PublicRouteToIgw:
-    Type: "AWS::EC2::Route"
+    Type: AWS::EC2::Route
     DependsOn: VpcIgwAttach
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref VpcIgw
       RouteTableId: !Ref RouteTablePublic
 
+  PrivateRouteToNat:
+    Type: AWS::EC2::Route
+    DependsOn: VpcAz0NatGateway
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref VpcAz0NatGateway
+
 # ######################################## SUBNET ASSOCIATIONS
 
   Az0PublicRouteTableAssociation:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref Az0PublicSubnet
       RouteTableId: !Ref PublicRouteTable
 
   Az0PrivateRouteTableAssociation:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref Az0PrivateSubnet
       RouteTableId: !Ref PrivateRouteTable
 
   Az1PublicRouteTableAssociation:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref Az1PublicSubnet
       RouteTableId: !Ref PublicRouteTable
 
   Az1PrivateRouteTableAssociation:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref Az1PrivateSubnet
       RouteTableId: !Ref PrivateRouteTable

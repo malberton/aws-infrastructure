@@ -3,14 +3,23 @@
 #
 # MAPPINGS
 Mappings:
-  SubnetMap:
+  "260036373721":
     us-east-1:
-      Az1: "us-east-1a"
-      Az2: "us-east-1b"
+      VpcCidr: 172.16.0.0/17
+      Az0PublicSubnet: 172.16.0.0/20
+      Az0PrivateSubnet: 172.16.16.0/20
+      Az1PublicSubnet: 172.16.32.0/20
+      Az1PrivateSubnet: 172.16.48.0/20
+      RegUc: US-EAST-1
+      RegAbb: use1
     us-west-2:
-      Az1: "us-west-2a"
-      Az2: "us-west-2b"
-
+      VpcCidr: 172.16.128.0/17
+      Az0PublicSubnet: 172.16.128.0/20
+      Az0PrivateSubnet: 172.16.144.0/20
+      Az1PublicSubnet: 172.16.160.0/20
+      Az1PrivateSubnet: 172.16.176.0/20
+      RegUc: US-WEST-2
+      RegAbb: usw2
 
 # RESOURCES
 Resources:
@@ -18,132 +27,154 @@ Resources:
 # ######################################## VPC
 
   VpcBase:
-    Type: "AWS::EC2::VPC"
+    Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 172.16.0.0/16
+      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", VpcCidr ]
       EnableDnsSupport: True
-      EnableDnsHostnames: False
+      EnableDnsHostnames: True
       InstanceTenancy: default
       Tags:
         - Key: Name
           Value: VPC Test
 
-# ######################################## SUBNETS
-
-  SubnetPublicAz1:
-    Type: "AWS::EC2::Subnet"
-    Properties:
-      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az1]
-      CidrBlock: 172.16.1.0/24
-      MapPublicIpOnLaunch: False
-      Tags:
-        - Key: Name
-          Value: Public AZ1
-      VpcId: !Ref VpcBase
-
-  SubnetPrivateAz1:
-    Type: "AWS::EC2::Subnet"
-    Properties:
-      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az1]
-      CidrBlock: 172.16.2.0/24
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: Private AZ1
-      VpcId: !Ref VpcBase
-
-  SubnetPublicAz2:
-    Type: "AWS::EC2::Subnet"
-    Properties:
-      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az2]
-      CidrBlock: 172.16.3.0/24
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: Public AZ2
-      VpcId: !Ref VpcBase
-
-  SubnetPrivateAz2:
-    Type: "AWS::EC2::Subnet"
-    Properties:
-      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az2]
-      CidrBlock: 172.16.4.0/24
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: Private AZ2
-      VpcId: !Ref VpcBase
-
 # ######################################## INTERNET GATEWAY
 
-  Igw:
-    Type: "AWS::EC2::InternetGateway"
+  VpcIgw:
+    Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
-      - Key: Name
+        - Key: Name
         Value: VPC Test IGW
 
-  IgwAttach:
+  VpcIgwAttach:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref VpcBase
-      InternetGatewayId: !Ref Igw
+      InternetGatewayId: !Ref VpcIgw
+
+# ######################################## SUBNETS
+
+  Az0PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VpcBase
+      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az0PublicSubnet ]
+      AvailabilityZone: !Select [ 0, !GetAZs ]
+      MapPublicIpOnLaunch: False
+      Tags:
+        - Key: Name
+          Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Public Subnet" ] ]
+
+  Az0PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VpcBase
+      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az0PrivateSubnet ]
+      AvailabilityZone: !Select [ 0, !GetAZs ]
+      MapPublicIpOnLaunch: False
+      Tags:
+        - Key: Name
+          Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Private Subnet" ] ]
+
+  Az1PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VpcBase
+      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az1PublicSubnet ]
+      AvailabilityZone: !Select [ 1, !GetAZs ]
+      MapPublicIpOnLaunch: False
+      Tags:
+        - Key: Name
+          Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Public Subnet" ] ]
+
+  Az1PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VpcBase
+      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az1PrivateSubnet ]
+      AvailabilityZone: !Select [ 1, !GetAZs ]
+      MapPublicIpOnLaunch: False
+      Tags:
+        - Key: Name
+          Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Private Subnet" ] ]
+
+
+# ######################################## NAT GATEWAY
+
+  VpcAz0NatGatewayEip:
+    Type: AWS::EC2::EIP
+    DependsOn: VpcIgwAttach
+    Properties:
+      Domain: vpc
+
+  VpcAz0NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt VpcAz0NatGatewayEip.AllocationId
+      SubnetId: !Ref Az0PublicSubnet
+      Tags:
+        - Key: Name
+          Value: !Join [ " ", [ VPC Test, !Select [ 0, !GetAZs ], NAT Gateway ] ]
+
 
 # ######################################## ROUTE TABLES
 
-  RouteTablePublic:
-    Type: "AWS::EC2::RouteTable"
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VpcBase
       Tags:
       - Key: Name
-        Value: VPC Test public RT
+        Value: VPC Test Public Subnet Route Table
 
-  RouteTablePrivate:
-    Type: "AWS::EC2::RouteTable"
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VpcBase
       Tags:
       - Key: Name
-        Value: VPC Test private RT
+        Value: VPC Test Private Subnet Route Table
 
 # ######################################## ROUTES
 
-  RouteTablePublicAddIgw:
-    Type: "AWS::EC2::Route"
+  PublicRouteToIgw:
+    Type: AWS::EC2::Route
+    DependsOn: VpcIgwAttach
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref Igw
+      GatewayId: !Ref VpcIgw
       RouteTableId: !Ref RouteTablePublic
+
+  PrivateRouteToNat:
+    Type: AWS::EC2::Route
+    DependsOn: VpcAz0NatGateway
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref VpcAz0NatGateway
 
 # ######################################## SUBNET ASSOCIATIONS
 
-  RouteTablePublicAssociateSubnetAz1:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+  Az0PublicRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref RouteTablePublic
-      SubnetId: !Ref SubnetPublicAz1
+      SubnetId: !Ref Az0PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
 
-  RouteTablePublicAssociateSubnetAz2:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+  Az0PrivateRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref RouteTablePublic
-      SubnetId: !Ref SubnetPublicAz2
+      SubnetId: !Ref Az0PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
 
-  RouteTablePrivateAssociateSubnetAz1:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+  Az1PublicRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref RouteTablePrivate
-      SubnetId: !Ref SubnetPrivateAz1
+      SubnetId: !Ref Az1PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
 
-  RouteTablePrivateAssociateSubnetAz2:
-    Type: "AWS::EC2::SubnetRouteTableAssociation"
+  Az1PrivateRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref RouteTablePrivate
-      SubnetId: !Ref SubnetPrivateAz2
-
-# security groups
-# acl
-# vpn attachments
-# network interfaces
-# vpc peering
+      SubnetId: !Ref Az1PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable

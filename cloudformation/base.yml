@@ -103,26 +103,27 @@ Resources:
 
 # ######################################## ROUTE TABLES
 
-  RouteTablePublic:
+  PublicRouteTable:
     Type: "AWS::EC2::RouteTable"
     Properties:
       VpcId: !Ref VpcBase
       Tags:
       - Key: Name
-        Value: VPC Test public RT
+        Value: VPC Test Public Subnet Route Table
 
-  RouteTablePrivate:
+  PrivateRouteTable:
     Type: "AWS::EC2::RouteTable"
     Properties:
       VpcId: !Ref VpcBase
       Tags:
       - Key: Name
-        Value: VPC Test private RT
+        Value: VPC Test Private Subnet Route Table
 
 # ######################################## ROUTES
 
-  RouteTablePublicAddIgw:
+  PublicRouteToIgw:
     Type: "AWS::EC2::Route"
+    DependsOn: VpcIgwAttach
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref VpcIgw

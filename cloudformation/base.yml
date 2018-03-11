@@ -125,37 +125,31 @@ Resources:
     Type: "AWS::EC2::Route"
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref Igw
+      GatewayId: !Ref VpcIgw
       RouteTableId: !Ref RouteTablePublic
 
 # ######################################## SUBNET ASSOCIATIONS
 
-  RouteTablePublicAssociateSubnetAz1:
+  Az0PublicRouteTableAssociation:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties:
-      RouteTableId: !Ref RouteTablePublic
-      SubnetId: !Ref SubnetPublicAz1
+      SubnetId: !Ref Az0PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
 
-  RouteTablePublicAssociateSubnetAz2:
+  Az0PrivateRouteTableAssociation:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties:
-      RouteTableId: !Ref RouteTablePublic
-      SubnetId: !Ref SubnetPublicAz2
+      SubnetId: !Ref Az0PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
 
-  RouteTablePrivateAssociateSubnetAz1:
+  Az1PublicRouteTableAssociation:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties:
-      RouteTableId: !Ref RouteTablePrivate
-      SubnetId: !Ref SubnetPrivateAz1
+      SubnetId: !Ref Az1PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
 
-  RouteTablePrivateAssociateSubnetAz2:
+  Az1PrivateRouteTableAssociation:
     Type: "AWS::EC2::SubnetRouteTableAssociation"
     Properties:
-      RouteTableId: !Ref RouteTablePrivate
-      SubnetId: !Ref SubnetPrivateAz2
-
-# security groups
-# acl
-# vpn attachments
-# network interfaces
-# vpc peering
+      SubnetId: !Ref Az1PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable

@@ -2,7 +2,7 @@
 #
 # MAPPINGS
 Mappings:
-  "260036373721":
+  EnvironmentMap:
     us-east-1:
       VpcCidr: 172.16.0.0/17
       Az0PublicSubnet: 172.16.0.0/20
@@ -28,7 +28,7 @@ Resources:
   VpcBase:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", VpcCidr ]
+      CidrBlock: !FindInMap [ EnvironmentMap, !Ref "AWS::Region", VpcCidr ]
       EnableDnsSupport: True
       EnableDnsHostnames: True
       InstanceTenancy: default
@@ -57,45 +57,45 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcBase
-      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az0PublicSubnet ]
+      CidrBlock: !FindInMap [ EnvironmentMap, !Ref "AWS::Region", Az0PublicSubnet ]
       AvailabilityZone: !Select [ 0, !GetAZs ]
       MapPublicIpOnLaunch: False
       Tags:
         - Key: Name
-          Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Public Subnet" ] ]
+          Value: !Join [" ", [ !FindInMap [ EnvironmentMap, !Ref "AWS::Region", RegUc ], "Public Subnet" ] ]
 
   Az0PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcBase
-      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az0PrivateSubnet ]
+      CidrBlock: !FindInMap [ EnvironmentMap, !Ref "AWS::Region", Az0PrivateSubnet ]
       AvailabilityZone: !Select [ 0, !GetAZs ]
       MapPublicIpOnLaunch: False
       Tags:
         - Key: Name
-          Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Private Subnet" ] ]
+          Value: !Join [" ", [ !FindInMap [ EnvironmentMap, !Ref "AWS::Region", RegUc ], "Private Subnet" ] ]
 
   Az1PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcBase
-      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az1PublicSubnet ]
+      CidrBlock: !FindInMap [ EnvironmentMap, !Ref "AWS::Region", Az1PublicSubnet ]
       AvailabilityZone: !Select [ 1, !GetAZs ]
       MapPublicIpOnLaunch: False
       Tags:
         - Key: Name
-          Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Public Subnet" ] ]
+          Value: !Join [" ", [ !FindInMap [ EnvironmentMap, !Ref "AWS::Region", RegUc ], "Public Subnet" ] ]
 
   Az1PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VpcBase
-      CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", Az1PrivateSubnet ]
+      CidrBlock: !FindInMap [ EnvironmentMap, !Ref "AWS::Region", Az1PrivateSubnet ]
       AvailabilityZone: !Select [ 1, !GetAZs ]
       MapPublicIpOnLaunch: False
       Tags:
         - Key: Name
-          Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Private Subnet" ] ]
+          Value: !Join [" ", [ !FindInMap [ EnvironmentMap, !Ref "AWS::Region", RegUc ], "Private Subnet" ] ]
 
 
 # ######################################## NAT GATEWAY

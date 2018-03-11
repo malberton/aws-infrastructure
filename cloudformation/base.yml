@@ -1,5 +1,4 @@
 # Example of Infrastructure as code
-# Mark Alberton
 #
 # MAPPINGS
 Mappings:
@@ -178,3 +177,15 @@ Resources:
     Properties:
       SubnetId: !Ref Az1PrivateSubnet
       RouteTableId: !Ref PrivateRouteTable
+
+# ######################################## REMAINING
+# The following are either in the process of being completed or are being mentioned without being completed (to avoid publishing public IP addresses):
+# DHCP
+# VPC Customer Gateway
+# VPC Private Gateway
+# VPN Connection and Attachment
+# VPN Gateway Route Propagation
+# Private Hosted Zone
+# VPC Endpoint
+# VPC Security Group(s)
+# Public key

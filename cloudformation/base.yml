@@ -31,7 +31,7 @@ Resources:
     Properties:
       CidrBlock: !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", VpcCidr ]
       EnableDnsSupport: True
-      EnableDnsHostnames: False
+      EnableDnsHostnames: True
       InstanceTenancy: default
       Tags:
         - Key: Name

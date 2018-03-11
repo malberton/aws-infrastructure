@@ -3,14 +3,23 @@
 #
 # MAPPINGS
 Mappings:
-  SubnetMap:
+  "260036373721":
     us-east-1:
-      Az1: "us-east-1a"
-      Az2: "us-east-1b"
+      VpcCidr: 172.16.0.0/17
+      Az0PublicSubnet: 172.16.0.0/20
+      Az0PrivateSubnet: 172.16.16.0/20
+      Az1PublicSubnet: 172.16.32.0/20
+      Az1PrivateSubnet: 172.16.48.0/20
+      RegUc: US-EAST-1
+      RegAbb: use1
     us-west-2:
-      Az1: "us-west-2a"
-      Az2: "us-west-2b"
-
+      VpcCidr: 172.16.128.0/17
+      Az0PublicSubnet: 172.16.128.0/20
+      Az0PrivateSubnet: 172.16.144.0/20
+      Az1PublicSubnet: 172.16.160.0/20
+      Az1PrivateSubnet: 172.16.176.0/20
+      RegUc: US-WEST-2
+      RegAbb: usw2
 
 # RESOURCES
 Resources:

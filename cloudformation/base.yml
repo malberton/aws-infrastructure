@@ -101,6 +101,22 @@ Resources:
 
 # ######################################## NAT GATEWAY
 
+  VpcAz0NatGatewayEip:
+    Type: AWS::EC2::EIP
+    DependsOn: VpcIgwAttach
+    Properties:
+      Domain: vpc
+
+  VpcAz0NatGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt VpcAz0NatGatewayEip.AllocationId
+      SubnetId: !Ref Az0PublicSubnet
+      Tags:
+        - Key: Name
+          Value: !Join [ " ", [ VPC Test, !Select [ 0, !GetAZs ], NAT Gateway ] ]
+
+
 # ######################################## ROUTE TABLES
 
   PublicRouteTable:

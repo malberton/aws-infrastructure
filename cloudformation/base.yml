@@ -37,17 +37,18 @@ Resources:
         - Key: Name
           Value: VPC Test
 
-# ######################################## SUBNETS
+# ######################################## INTERNET GATEWAY
 
-  SubnetPublicAz1:
-    Type: "AWS::EC2::Subnet"
+  VpcIgw:
+    Type: "AWS::EC2::InternetGateway"
     Properties:
-      AvailabilityZone: !FindInMap [SubnetMap, !Ref "AWS::Region", Az1]
-      CidrBlock: 172.16.1.0/24
-      MapPublicIpOnLaunch: False
       Tags:
         - Key: Name
-          Value: Public AZ1
+        Value: VPC Test IGW
+
+  VpcIgwAttach:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
       VpcId: !Ref VpcBase
       InternetGatewayId: !Ref VpcIgw
 
@@ -97,11 +98,8 @@ Resources:
         - Key: Name
           Value: !Join [" ", [ !FindInMap [ !Ref "AWS::AccountId", !Ref "AWS::Region", RegUc ], "Private Subnet" ] ]
 
-  IgwAttach:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VpcBase
-      InternetGatewayId: !Ref Igw
+
+# ######################################## NAT GATEWAY
 
 # ######################################## ROUTE TABLES
 
